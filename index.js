@@ -62,6 +62,10 @@ class Noodlejump extends NoodlejumpAdvanced {
     this.anzahlSpruenge = 0;
     this.punktzahl = 0;
     this.punkteAnzeige = this.add.text(0, 0, `0 Punkte`);
+
+    // Sorge dafür, dass die Punkteanzeige an die Kamerafahrt gekoppelt ist.
+    // Dokumentation: https://photonstorm.github.io/phaser-ce/Phaser.Component.FixedToCamera.html#fixedToCamera
+    this.punkteAnzeige.fixedToCamera = true;
   }
 
   /**
@@ -75,6 +79,7 @@ class Noodlejump extends NoodlejumpAdvanced {
     this.kameraYMinimum = Math.min(this.kameraYMinimum, this.held.y - this.game.height + 130);
     this.camera.y = this.kameraYMinimum;
     
+    // Spielstandtext aktualisieren
     this.punkteAnzeige.text = `${this.punktzahl} Punkte`;
 
     this.weltBewegen();
@@ -103,9 +108,6 @@ class Noodlejump extends NoodlejumpAdvanced {
       } else {
         this.punktzahl += 1;
       }
-      
-      // Spielstandtext aktualisieren	
-      this.punkteAnzeige.text = `${this.punktzahl} Punkte`;
 
       // Nach jedem 10-ten Sprung..
       if (this.anzahlSpruenge !== 0 && this.anzahlSpruenge % 10 === 0) {
