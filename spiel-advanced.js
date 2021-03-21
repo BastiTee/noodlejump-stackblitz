@@ -11,7 +11,8 @@ export default class NoodlejumpAdvanced {
    */
   mehrBilderLaden() {
     // Pixelbild laden (wird für die Plattformen verwendet)
-    this.load.image('pixel', 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/836/pixel_1.png');
+    this.load.image('pixel', './images/pixel_1.png');
+    this.load.image('backer', './images/backer-80.png');
   }
 
   /**
@@ -99,8 +100,9 @@ export default class NoodlejumpAdvanced {
    * https://photonstorm.github.io/phaser-ce/Phaser.Game.html#add
    */
   heldAnlegen() {
+    var hoeheDesSpielerAvatars = 51;
     // Neuen "Sprite" anlegen (https://photonstorm.github.io/phaser-ce/Phaser.GameObjectFactory.html#sprite)
-    this.held = this.game.add.sprite(this.world.centerX, this.world.height - 36, 'held');
+    this.held = this.game.add.sprite(this.world.centerX, this.world.height - hoeheDesSpielerAvatars, 'held');
     this.held.anchor.set(0.5);
     // Sprungkraft des Helden
     this.velocity = 350;
@@ -120,6 +122,9 @@ export default class NoodlejumpAdvanced {
     this.held.body.checkCollision.up = false;
     this.held.body.checkCollision.left = false;
     this.held.body.checkCollision.right = false;
+
+    // Zeige Bäcker rechts vom Helden an
+    this.game.add.sprite(this.world.width - 64, this.world.height - 96, 'backer');
   }
 
   /**
@@ -147,8 +152,8 @@ export default class NoodlejumpAdvanced {
       // Bei Touch-Eingabe wird nur einmal die Sprungweite berechnet und
       // beibehalten. Danach muss erst wieder losgelassen werden.
       if (!this.touchEingabeNochAktiv) {
-        var abstandZumHeld = touchEingabeAktiv.x - this.held.x;
-        if (abstandZumHeld <= 0) {
+        var eingabeLinks = this.game.scale.width / 2 > touchEingabeAktiv.x;
+        if (eingabeLinks) {
           this.held.body.velocity.x = -200;
         } else {
           this.held.body.velocity.x = 200;
@@ -183,7 +188,7 @@ export default class NoodlejumpAdvanced {
 
     // Wenn der Held aus der Sicht der Kamera fällt, ist das Spiel vorbei
     if (this.held.y > this.kameraYMinimum + this.game.height && this.held.alive) {
-      this.state.start('Noodlejump');
+      this.state.start('gameover');
     }
   }
 
