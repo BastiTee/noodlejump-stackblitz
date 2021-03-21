@@ -61,6 +61,13 @@ class Noodlejump extends NoodlejumpAdvanced {
     // Eingene Zählvariablen
     this.anzahlSpruenge = 0;
     this.punktzahl = 0;
+    this.punkteMultiplikator = 1;
+    this.punkteAnzeige = this.add.text(0, 0, `0 Punkte`);
+
+    var letztePunktzahl = localStorage.getItem('punktzahl');
+    if (letztePunktzahl) {
+      this.punktzahl = letztePunktzahl;
+    }
   }
 
   /**
@@ -73,6 +80,10 @@ class Noodlejump extends NoodlejumpAdvanced {
     // Programmierung der Kamerafahrt
     this.kameraYMinimum = Math.min(this.kameraYMinimum, this.held.y - this.game.height + 130);
     this.camera.y = this.kameraYMinimum;
+
+    // Positionieren der Punktezahl innerhalb der Welt	
+    this.punkteAnzeige.y = Math.min(this.kameraYMinimum, 0);	
+    this.punkteAnzeige.text = `${this.punktzahl} Punkte`;
 
     this.weltBewegen();
     this.heldBewegen();
@@ -98,12 +109,22 @@ class Noodlejump extends NoodlejumpAdvanced {
         this.punktzahl = 0;
         // Danach um 1 erhöht
       } else {
-        this.punktzahl += 1;
+        this.punktzahl = this.punktzahl + 1 * this.punkteMultiplikator;
+        localStorage.setItem('punktzahl', this.punktzahl);
       }
+      
+      // Spielstandtext aktualisieren	
+      this.punkteAnzeige.text = `${this.punktzahl} Punkte`;
 
       // Nach jedem 10-ten Sprung..
       if (this.anzahlSpruenge !== 0 && this.anzahlSpruenge % 10 === 0) {
         // .. mache etwas – zum Beispiel das Spiel schwerer ;)
+        this.punkteMultiplikator++;
+        // lasse Geschwindigkeit und Gravitation nicht über übermenschlichen Wert steigen.
+        if (this.velocity < 700 && this.held.body.gravity.y < 1600) {
+          this.held.body.gravity.y = this.held.body.gravity.y * 1.35;
+          this.velocity = this.velocity * 1.2;
+        }
       }
 
       // Der eigentliche Sprung bzw. die Bewegung des Helden wird ausgeführt
